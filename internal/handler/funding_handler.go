@@ -30,9 +30,13 @@ func NewFundingHandler(svc *service.FundingService, db *sqlx.DB) *FundingHandler
 // RegisterFundingRoutes mounts the funding endpoint behind auth middleware
 // and an additional system-user gate that verifies privilege against the database.
 func (h *FundingHandler) RegisterFundingRoutes(mux *http.ServeMux, authMw *auth.Middleware) {
-	protected := authMw.Protect(http.HandlerFunc(h.handleFund))
-	systemOnly := h.requireSystemUser(protected)
-	mux.Handle("POST /api/v1/transactions/system/fund", systemOnly)
+	// First, wrap the actual handler with the system-user check
+	systemOnly := h.requireSystemUser(http.HandlerFunc(h.handleFund))
+	
+	// Then, wrap THAT with the JWT protection so Auth runs first
+	protected := authMw.Protect(systemOnly)
+
+	mux.Handle("POST /api/v1/transactions/system/fund", protected)
 }
 
 func (h *FundingHandler) handleFund(w http.ResponseWriter, r *http.Request) {

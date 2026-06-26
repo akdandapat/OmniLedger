@@ -38,12 +38,15 @@ func (fs *FundingService) FundAccount(ctx context.Context, req model.FundRequest
 
 	txnID := uuid.New()
 
-	systemAcct, err := fs.store.GetAccountByUserID(ctx, systemUserID)
-	if err != nil {
-		return nil, fmt.Errorf("system account lookup: %w", err)
-	}
+	// systemAcct, err := fs.store.GetAccountByUserID(ctx, systemUserID)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("system account lookup: %w", err)
+	// }
 
-	err = fs.store.WithTx(ctx, func(tx *sqlx.Tx) error {
+	// Always use the hardcoded central bank account for minting money
+	centralBankAccountID := uuid.MustParse("00000000-0000-0000-0000-000000000001")
+
+	err := fs.store.WithTx(ctx, func(tx *sqlx.Tx) error {
 
 		targetAcct, err := fs.store.GetAccountForUpdate(ctx, tx, req.ToAccountID)
 		if err != nil {
@@ -53,9 +56,9 @@ func (fs *FundingService) FundAccount(ctx context.Context, req model.FundRequest
 			return fmt.Errorf("target %w", errs.ErrAccountNotActive)
 		}
 
-		txn := &model.Transaction{
+txn := &model.Transaction{
 			ID:             txnID,
-			FromAccountID:  systemAcct.ID,
+			FromAccountID:  centralBankAccountID,
 			ToAccountID:    req.ToAccountID,
 			Amount:         req.Amount,
 			Status:         model.TxnStatusPending,

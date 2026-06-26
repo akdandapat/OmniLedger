@@ -9,6 +9,7 @@ import {
   LogOut,
   Shield,
   Wallet,
+  ShieldAlert,
 } from 'lucide-react';
 import { authAPI } from '@/lib/api';
 
@@ -17,6 +18,7 @@ const navItems = [
   { label: 'Accounts', href: '/dashboard/accounts', icon: Wallet },
   { label: 'Transfers', href: '/dashboard/transfers', icon: ArrowLeftRight },
   { label: 'Activity', href: '/dashboard/activity', icon: History },
+  { label: 'Treasury Admin', href: '/dashboard/admin', icon: ShieldAlert },
 ];
 
 export default function Sidebar() {

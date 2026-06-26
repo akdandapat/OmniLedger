@@ -22,7 +22,7 @@
 
 ---
 
-![Dashboard Screenshot](docs/screenshots/dashboard.png)
+![Dashboard Screenshot](docs/dashboard.png)
 
 ---
 
